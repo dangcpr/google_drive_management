@@ -1,0 +1,1 @@
+urlGoogleSearch='https://www.googleapis.com/customsearch/v1?'
