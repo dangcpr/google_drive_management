@@ -1,5 +1,5 @@
-from src.models.tables import models
-from src.init.db import engine
+from models.tables import models
+from init.db import engine
 
 
 def create_tables():

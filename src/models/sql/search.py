@@ -1,4 +1,4 @@
-from src.models.tables import models
+from models.tables import models
 from sqlalchemy.orm import Session
 
 

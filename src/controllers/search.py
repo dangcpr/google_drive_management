@@ -1,10 +1,9 @@
 from fastapi import Depends, APIRouter, Response, logger
 import requests
-import src.constants.search as const
+import constants.search as const
 from sqlalchemy.orm import Session
-from src.models.sql import search as sql
-
-from src.init.db import get_db
+from models.sql import search as sql
+from init.db import get_db
 
 router = APIRouter(
     prefix="/google/search",

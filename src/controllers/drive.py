@@ -1,8 +1,8 @@
 import io
 from fastapi import APIRouter, Response, logger
 from googleapiclient.http import MediaIoBaseDownload, HttpError
-from src.helpers.convert_type import checkAppTypeIsSupport, checkGoogleTypeIsSupport, convertAppToExtension, convertExtensionToApp, convertTypeGoogleToApp, convertTypeGoogleToExtension
-from src.constants.drive import service
+from helpers.convert_type import checkAppTypeIsSupport, checkGoogleTypeIsSupport, convertAppToExtension, convertExtensionToApp, convertTypeGoogleToApp, convertTypeGoogleToExtension
+from constants.drive import service
 
 router = APIRouter(
     prefix="/google/drive",
@@ -12,12 +12,12 @@ router = APIRouter(
 
 
 @router.get("/list", summary="Get list file from Google Drive")
-async def getFile(response: Response):
+async def getFile(response: Response, page_token: str | None = None):
     try:
-        drive = service.files().list().execute()
+        drive = service.files().list(pageToken=page_token).execute()
         # folders = drive.get('files').get('mimeType') == 'application/vnd.google-apps.folder'
         # return {"folders": list(filter(lambda x: x['mimeType'] == 'application/vnd.google-apps.folder', drive.get('files')))}
-        return {"files": drive.get('files')}
+        return {"files": drive}
     except Exception as e:
         response.status_code = 500
         return {"error": str(e)}
@@ -54,7 +54,7 @@ async def downloadFile(file_id: str, response: Response, type: str | None = None
 
         # save file
         file.seek(0)
-        with open(f"download/{file_name}", "wb") as f:
+        with open(f"../download/{file_name}", "wb") as f:
             f.write(file.read())
             f.close()
 
@@ -83,8 +83,8 @@ async def downloadFolder(folder_id: str, response: Response, type: str | None = 
 
         # create folder
         import os
-        if(not os.path.exists('./download/' + folder_info["name"])):
-            os.mkdir('./download/' + folder_info["name"])
+        if(not os.path.exists('../download/' + folder_info["name"])):
+            os.mkdir('../download/' + folder_info["name"])
 
         # download files
         for file in files_folder:
@@ -107,7 +107,7 @@ async def downloadFolder(folder_id: str, response: Response, type: str | None = 
 
                 f_io.seek(0)
 
-                with open(f"download/{folder_info["name"]}/{file["name"]}{convertTypeGoogleToExtension(file["mimeType"]) if type == None else (f".{type}")}", "wb") as f:
+                with open(f"../download/{folder_info["name"]}/{file["name"]}{convertTypeGoogleToExtension(file["mimeType"]) if type == None else (f".{type}")}", "wb") as f:
                     f.write(f_io.read())
                     f.close()
                 download_success += 1
